@@ -1,4 +1,4 @@
-import { UserLimit } from '../types';
+import { UserLimit } from '../types.js';
 
 // Repository
 export interface UserLimitRepository {

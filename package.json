@@ -5,9 +5,14 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "tsc && node dist/index.js",
-    "watch": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts"
+    "start": "node dist/kinesis/lambda.js",
+    "dev": "ts-node src/test/local-runner.ts",
+    "watch": "nodemon --watch 'src/**/*.ts' --exec 'npm run dev'",
+    "test": "jest --config jest.config.js",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint 'src/**/*.ts'",
+    "test:runner": "NODE_OPTIONS='--loader ts-node/esm' node src/test/local-runner.ts"
   },
   "repository": {
     "type": "git",
@@ -27,5 +32,8 @@
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1692.0"
   }
 }

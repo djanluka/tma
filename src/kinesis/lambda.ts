@@ -1,17 +1,16 @@
 // lambda.ts
-import { KinesisStreamHandler } from 'aws-lambda';
-import { InMemoryUserLimitRepository } from '../user_limit/repository/in_memory';
-import { UserLimitHandler } from '../user_limit/handler';
+import { Context, KinesisStreamEvent, KinesisStreamHandler } from 'aws-lambda';
+import { InMemoryUserLimitRepository } from '../user_limit/repository/in_memory.js';
+import { UserLimitHandler } from '../user_limit/handler.js';
 
 const repository = new InMemoryUserLimitRepository();
 const handler = new UserLimitHandler(repository);
 
-export const processUserLimitEvents: KinesisStreamHandler = async (event) => {
+export const processUserLimitEvents: KinesisStreamHandler = async (event: KinesisStreamEvent, context: Context) => {
   try {
     await handler.handleEvent(event);
-    return;
   } catch (error) {
     console.error('Error processing events:', error);
-    return;
+    throw error;
   }
 };

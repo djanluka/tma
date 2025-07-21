@@ -1,6 +1,6 @@
 // user-limit-handler.ts
-import { UserLimit, LimitStatus, LimitType, LimitPeriod } from './types';
-import { UserLimitRepository } from './repository/in_memory';
+import { UserLimit, LimitStatus, LimitType, LimitPeriod } from './types.js';
+import { UserLimitRepository } from './repository/in_memory.js';
 import { KinesisStreamEvent } from 'aws-lambda';
 
 interface UserLimitCreatedEvent {
