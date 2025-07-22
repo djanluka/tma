@@ -21,16 +21,28 @@ const testEvent: KinesisStreamEvent = {
     {
       kinesis: {
           data: Buffer.from(JSON.stringify({
-              type: 'USER_LIMIT_CREATED',
-              userId: 'user123',
-              userLimitId: 'limit456',
-              brandId: 'brand789',
-              currencyCode: 'USD',
-              limitType: 'DEPOSIT',
-              limitValue: '1000',
-              limitPeriod: 'CALENDAR_DAY',
-              activeFrom: Date.now()
-          })).toString('base64'),
+          aggregateId: "VijPYTEOgK7dxLs5fBjJ",
+          context: {
+            correlationId: "hVyFHScCNAmSyAPulhtsQ"
+          },
+          createdAt: 1647946090824,
+          eventId: "Qqko31j8InLTSeA5smpC",
+          payload: {
+            activeFrom: 1647946090824,
+            brandId: "000000000000000000000001",
+            currencyCode: "SEK",
+            nextResetTime: 1650624490824,
+            period: "MONTH",
+            status: "ACTIVE",
+            type: "DEPOSIT",
+            userId: "VijPYTEOgK7dxLs5fBjJ",
+            userLimitId: "jIcDgFDxkhM2qRWFrwVn",
+            value: "250000"
+          },
+          sequenceNumber: 5,
+          source: "limitUser",
+          type: "USER_LIMIT_CREATED"
+        })).toString('base64'),
           partitionKey: '1',
           sequenceNumber: '1',
           approximateArrivalTimestamp: Date.now() / 1000,

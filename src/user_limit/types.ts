@@ -24,19 +24,62 @@ export enum LimitType {
   SESSION = 'SESSION',
 }
 
-export interface UserLimit {
-  activeFrom: number;
-  activeUntil?: number;
+// Added types
+export enum EventType {
+  USER_LIMIT_CREATED = 'USER_LIMIT_CREATED',
+  USER_LIMIT_PROGRESS_CHANGED = 'USER_LIMIT_PROGRESS_CHANGED',
+  USER_LIMIT_RESET = 'USER_LIMIT_RESET',
+}
+
+interface BasePayload {
   brandId: string;
-  createdAt?: number;
   currencyCode: string;
-  nextResetTime?: number;
-  period: LimitPeriod;
-  previousLimitValue?: string;
-  progress?: string;
-  status: LimitStatus;
-  type: LimitType;
+  nextResetTime: number;
   userId: string;
   userLimitId: string;
+}
+
+interface CreatedEventPayload extends BasePayload {
+  activeFrom: number;
+  period: LimitPeriod;
+  status: LimitStatus;
+  type: LimitType;
   value: string;
 }
+
+interface ProgressChangedEventPayload extends BasePayload {
+  amount: number;
+  previousProgress: string;
+  period: LimitPeriod;
+}
+
+interface ResetEventPayload extends BasePayload {
+  resetAmount: string;
+  resetPercentage: string;
+  type: LimitType;
+  unusedAmount: string;
+}
+
+interface BaseEvent {
+  aggregateId: string,
+  context: any,
+  createdAt: number,
+  eventId: string,
+  sequenceNumber: number,
+  source: string,
+}
+
+export interface UserLimitCreatedEvent extends BaseEvent {
+  type: EventType.USER_LIMIT_CREATED,
+  payload: CreatedEventPayload,
+}
+export interface UserLimitProgressChangedEvent extends BaseEvent {
+  type: EventType.USER_LIMIT_PROGRESS_CHANGED,
+  payload: ProgressChangedEventPayload,
+}
+export interface UserLimitResetEvent extends BaseEvent {
+  type: EventType.USER_LIMIT_RESET,
+  payload: ResetEventPayload,
+}
+
+export type UserLimitEvent = UserLimitCreatedEvent | UserLimitProgressChangedEvent | UserLimitResetEvent;
