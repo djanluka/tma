@@ -1,0 +1,40 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 24
+    
+    - name: Install dependencies
+      run: npm install
+    
+    - name: Run build
+      run: npm run build
+    
+    - name: Run tests and verify output
+      id: test
+      run: |
+        # Run tests and capture output
+        TEST_OUTPUT=$(npm run test --silent)
+        echo "Test output: $TEST_OUTPUT"
+        
+        # Check if output contains success message
+        if [[ "$TEST_OUTPUT" != *"Test completed successfully"* ]]; then
+          echo "::error::Test output did not contain 'Test completed successfully'"
+          exit 1
+        fi
+        
+        echo "::notice::Tests passed with expected output"
