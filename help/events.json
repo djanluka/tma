@@ -12,7 +12,7 @@
     },
     "sequenceNumber": 1,
     "source": "limitUser",
-    "type": "LIMIT_USER_CREATED"
+    "type": "USER_LIMIT_CREATED"
   },
   {
     "aggregateId": "VijPYTEOgK7dxLs5fBjJ",
