@@ -31,9 +31,12 @@ export class UserLimitHandler {
     }
   }
 
-  private async handleUserLimitCreated(data: UserLimit): Promise<void> {
-    await this.repository.create(data);
-    console.log(`Created new user limit: ${data.userLimitId}`);
+  private async handleUserLimitCreated(userLimit: UserLimit): Promise<void> {
+    const created = await this.repository.create(userLimit);
+    if (!created) {
+      throw new Error(`Failed creating UserLimit: ${userLimit.userLimitId}`);
+    }
+    console.log(`Created new user limit: ${userLimit.userLimitId}`);
   }
 
   private async handleUserLimitProgressChanged(data: UserLimit): Promise<void> {
