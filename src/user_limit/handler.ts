@@ -23,10 +23,10 @@ export class UserLimitHandler {
             await this.handleUserLimitReset(userLimitEvent.payload);
             break;
           default:
-            console.warn(`Unknown event type: ${(userLimitEvent as any).type}`);
+            console.warn(`❓Unknown event type: ${(userLimitEvent as any).type}`);
         }
       } catch (error) {
-        console.error('Error processing record:', error);
+        console.error('❌ Error processing record:', error);
       }
     }
   }
@@ -36,7 +36,7 @@ export class UserLimitHandler {
     if (!created) {
       throw new Error(`Failed creating UserLimit: ${userLimit.userLimitId}`);
     }
-    console.log(`Created new user limit: ${userLimit.userLimitId}`);
+    console.log(`✅ Created new user limit: ${userLimit.userLimitId}`);
   }
 
   private async handleUserLimitProgressChanged(data: UserLimit): Promise<void> {
@@ -45,7 +45,7 @@ export class UserLimitHandler {
     //   console.warn(`User limit not found: ${data.payload.userLimitId}`);
     //   return;
     // }
-    console.log(`Updated progress for limit ${data.userLimitId}`);
+    console.log(`✅ Updated progress for limit ${data.userLimitId}`);
   }
 
   private async handleUserLimitReset(userLimit: UserLimit): Promise<void> {
@@ -53,6 +53,6 @@ export class UserLimitHandler {
     if (!reset) {
       throw new Error(`Failed reset UserLimit: ${userLimit.userLimitId}`);
     }
-    console.log(`Reset progress for limit ${userLimit.userLimitId}`);
+    console.log(`✅ Reset progress for limit ${userLimit.userLimitId}`);
   }
 }
