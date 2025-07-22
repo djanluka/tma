@@ -1,64 +1,45 @@
 import { UserLimitHandler } from '../user_limit/handler.js';
 import { KinesisStreamEvent, Context, Callback } from 'aws-lambda';
 import { InMemoryUserLimitRepository } from '../user_limit/repository/in_memory.js';
+import { join } from 'path';
+import fs from 'fs';
 
-const mockContext: Context = {
-  callbackWaitsForEmptyEventLoop: true,
-  functionName: 'testFunction',
-  functionVersion: '1',
-  invokedFunctionArn: 'arn:aws:lambda:us-east-1:123456789012:function:testFunction',
-  memoryLimitInMB: '128',
-  awsRequestId: 'test-request-id',
-  logGroupName: '/aws/lambda/testFunction',
-  logStreamName: '2023/01/01/[$LATEST]testStream',
-  getRemainingTimeInMillis: () => 5000,
-  done: () => {},
-  fail: () => {},
-  succeed: () => {},
-};
+function processEventsToKinesis(): KinesisStreamEvent {
+    // Get the events data
+    const projectRoot = process.cwd();
+    const eventsPath = join(projectRoot, 'events.json');
+    const eventsData = fs.readFileSync(eventsPath, 'utf-8');
+    const events = JSON.parse(eventsData);
 
-const testEvent: KinesisStreamEvent = {
-  Records: [
-    {
-      kinesis: {
-          data: Buffer.from(JSON.stringify({
-          aggregateId: "VijPYTEOgK7dxLs5fBjJ",
-          context: {
-            correlationId: "hVyFHScCNAmSyAPulhtsQ"
-          },
-          createdAt: 1647946090824,
-          eventId: "Qqko31j8InLTSeA5smpC",
-          payload: {
-            activeFrom: 1647946090824,
-            brandId: "000000000000000000000001",
-            currencyCode: "SEK",
-            nextResetTime: 1650624490824,
-            period: "MONTH",
-            status: "ACTIVE",
-            type: "DEPOSIT",
-            userId: "VijPYTEOgK7dxLs5fBjJ",
-            userLimitId: "jIcDgFDxkhM2qRWFrwVn",
-            value: "250000"
-          },
-          sequenceNumber: 5,
-          source: "limitUser",
-          type: "USER_LIMIT_CREATED"
-        })).toString('base64'),
-          partitionKey: '1',
-          sequenceNumber: '1',
-          approximateArrivalTimestamp: Date.now() / 1000,
-          kinesisSchemaVersion: ''
-      },
-      eventSource: 'aws:kinesis',
-      eventVersion: '1.0',
-      eventID: '1',
-      eventName: 'aws:kinesis:record',
-      invokeIdentityArn: 'arn:aws:iam::123456789012:role/lambda-role',
-      awsRegion: 'us-east-1',
-      eventSourceARN: 'arn:aws:kinesis:us-east-1:123456789012:stream/user-limit-stream'
+    if (!Array.isArray(events)) {
+        throw new Error('Expected events.json to contain an array of events');
     }
-  ]
-};
+    
+    // Create Kinesis Records
+    const records = events.map((event, index) => ({
+        kinesis: {
+            data: Buffer.from(JSON.stringify(event)).toString('base64'),
+            partitionKey: '1',
+            sequenceNumber: index.toString(),
+            approximateArrivalTimestamp: Date.now() / 1000,
+            kinesisSchemaVersion: '1.0'
+        },
+        eventSource: 'aws:kinesis',
+        eventVersion: '1.0',
+        eventID: '{ShardID}',
+        eventName: 'aws:kinesis:record',
+        invokeIdentityArn: 'arn:aws:iam::{AccountID}:role/{RoleName}',
+        awsRegion: 'us-east-1',
+        eventSourceARN: 'arn:aws:kinesis:us-east-1:{AccountID}:stream/{StreamName}'
+    }));
+    
+    return {
+        Records: records
+    };
+}
+
+// Example usage
+const kinesisEvent = processEventsToKinesis();
 
 const repository = new InMemoryUserLimitRepository();
 const handler = new UserLimitHandler(repository);
@@ -66,7 +47,7 @@ const handler = new UserLimitHandler(repository);
 (async () => {
   try {
     console.log('Starting test...');
-    await handler.handleEvent(testEvent);
+    await handler.handleEvent(kinesisEvent);
     console.log('Test completed successfully');
   } catch (error) {
     console.error('Test failed:', error);

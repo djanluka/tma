@@ -32,7 +32,7 @@ export class UserLimitHandler {
   }
 
   private async handleUserLimitCreated(data: UserLimitCreatedEvent): Promise<void> {
-    await this.repository.create(data);
+    // await this.repository.create(data);
     console.log(`Created new user limit: ${data.payload.userLimitId}`);
   }
 
