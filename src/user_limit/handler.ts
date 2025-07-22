@@ -48,12 +48,11 @@ export class UserLimitHandler {
     console.log(`Updated progress for limit ${data.userLimitId}`);
   }
 
-  private async handleUserLimitReset(data: UserLimit): Promise<void> {
-    await this.repository.resetProgress(data);
-    // if (!updatedLimit) {
-    //   console.warn(`User limit not found: ${data.payload.userLimitId}`);
-    //   return;
-    // }
-    console.log(`Reset progress for limit ${data.userLimitId}`);
+  private async handleUserLimitReset(userLimit: UserLimit): Promise<void> {
+    const reset = await this.repository.resetProgress(userLimit);
+    if (!reset) {
+      throw new Error(`Failed reset UserLimit: ${userLimit.userLimitId}`);
+    }
+    console.log(`Reset progress for limit ${userLimit.userLimitId}`);
   }
 }
