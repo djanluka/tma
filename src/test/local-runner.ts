@@ -1,5 +1,6 @@
-import { processUserLimitEvents } from '../kinesis/lambda.js';
+import { UserLimitHandler } from '../user_limit/handler.js';
 import { KinesisStreamEvent, Context, Callback } from 'aws-lambda';
+import { InMemoryUserLimitRepository } from '../user_limit/repository/in_memory.js';
 
 const mockContext: Context = {
   callbackWaitsForEmptyEventLoop: true,
@@ -59,10 +60,13 @@ const testEvent: KinesisStreamEvent = {
   ]
 };
 
+const repository = new InMemoryUserLimitRepository();
+const handler = new UserLimitHandler(repository);
+
 (async () => {
   try {
     console.log('Starting test...');
-    await processUserLimitEvents(testEvent, mockContext, ()=>{});
+    await handler.handleEvent(testEvent);
     console.log('Test completed successfully');
   } catch (error) {
     console.error('Test failed:', error);

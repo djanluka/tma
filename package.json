@@ -4,15 +4,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/kinesis/lambda.js",
-    "dev": "ts-node src/test/local-runner.ts",
-    "watch": "nodemon --watch 'src/**/*.ts' --exec 'npm run dev'",
-    "test": "jest --config jest.config.js",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "lint": "eslint 'src/**/*.ts'",
-    "test:runner": "NODE_OPTIONS='--loader ts-node/esm' node src/test/local-runner.ts"
+    "build": "rm -rf dist/ && tsc",
+    "cp:events": "npm run build && cp src/test/events.json dist/test",
+    "test": "npm run cp:events && NODE_OPTIONS='--loader ts-node/esm' node src/test/local-runner.ts"
   },
   "repository": {
     "type": "git",
