@@ -1,25 +1,25 @@
-import { UserLimitCreatedEvent, UserLimitProgressChangedEvent, UserLimitResetEvent } from '../types.js';
+import { UserLimit } from '../types.js';
 
 // Repository
 export interface UserLimitRepository {
-  create(userLimit: UserLimitCreatedEvent): Promise<void>;
-  updateProgress(userLimit: UserLimitProgressChangedEvent): Promise<void>;
-  resetProgress(userLimitId: UserLimitResetEvent): Promise<void>;
+  create(userLimit: UserLimit): Promise<void>;
+  updateProgress(userLimit: UserLimit): Promise<void>;
+  resetProgress(userLimitId: UserLimit): Promise<void>;
   // findById(userLimitId: string): Promise<UserLimit | null>;
 }
 
 export class InMemoryUserLimitRepository implements UserLimitRepository {
   private limits: Map<string, any> = new Map();
 
-  async create(userLimit: UserLimitCreatedEvent) {
+  async create(userLimit: UserLimit) {
     // create
   }
 
-  async updateProgress(userLimit: UserLimitProgressChangedEvent) {
+  async updateProgress(userLimit: UserLimit) {
     // update
   }
 
-  async resetProgress(userLimit: UserLimitResetEvent) {
+  async resetProgress(userLimit: UserLimit) {
     // reset
   }
 

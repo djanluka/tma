@@ -38,7 +38,6 @@ function processEventsToKinesis(): KinesisStreamEvent {
     };
 }
 
-// Example usage
 const kinesisEvent = processEventsToKinesis();
 
 const repository = new InMemoryUserLimitRepository();
