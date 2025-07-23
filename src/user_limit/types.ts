@@ -48,49 +48,35 @@ export enum EventType {
   USER_LIMIT_RESET = 'USER_LIMIT_RESET',
 }
 
-// interface BasePayload {
-//   brandId: string;
-//   currencyCode: string;
-//   nextResetTime: number;
-//   userId: string;
-//   userLimitId: string;
-// }
+interface BasePayload {
+  brandId: string;
+  currencyCode: string;
+  nextResetTime: number;
+  userId: string;
+  userLimitId: string;
+}
 
-// interface CreatedEventPayload extends BasePayload {
-//   activeFrom: number;
-//   period: LimitPeriod;
-//   status: LimitStatus;
-//   type: LimitType;
-//   value: string;
-// }
+export interface CreatedEventPayload extends BasePayload {
+  activeFrom: number;
+  period: LimitPeriod;
+  status: LimitStatus;
+  type: LimitType;
+  value: string;
+}
 
-// interface ProgressChangedEventPayload extends BasePayload {
-//   amount: number;
-//   previousProgress: string;
-//   period: LimitPeriod;
-// }
+export interface ProgressChangedEventPayload extends BasePayload {
+  amount: string;
+  previousProgress: string;
+  remainingAmount: string;
+  period: LimitPeriod;
+}
 
-// interface ResetEventPayload extends BasePayload {
-//   resetAmount: string;
-//   resetPercentage: string;
-//   type: LimitType;
-//   unusedAmount: string;
-// }
-
-// export interface UserLimitCreatedEvent extends BaseEvent {
-//   type: EventType.USER_LIMIT_CREATED,
-//   payload: CreatedEventPayload,
-// }
-// export interface UserLimitProgressChangedEvent extends BaseEvent {
-//   type: EventType.USER_LIMIT_PROGRESS_CHANGED,
-//   payload: ProgressChangedEventPayload,
-// }
-// export interface UserLimitResetEvent extends BaseEvent {
-//   type: EventType.USER_LIMIT_RESET,
-//   payload: ResetEventPayload,
-// }
-
-// export type UserLimitEvent = UserLimitCreatedEvent | UserLimitProgressChangedEvent | UserLimitResetEvent;
+export interface ResetEventPayload extends BasePayload {
+  resetAmount: string;
+  resetPercentage: string;
+  type: LimitType;
+  unusedAmount: string;
+}
 
 interface BaseEvent {
   aggregateId: string,
@@ -101,7 +87,17 @@ interface BaseEvent {
   source: string,
 }
 
-export interface UserLimitEvent extends BaseEvent {
-  type: EventType;
-  payload: UserLimit;
+export interface UserLimitCreatedEvent extends BaseEvent {
+  type: EventType.USER_LIMIT_CREATED,
+  payload: CreatedEventPayload,
 }
+export interface UserLimitProgressChangedEvent extends BaseEvent {
+  type: EventType.USER_LIMIT_PROGRESS_CHANGED,
+  payload: ProgressChangedEventPayload,
+}
+export interface UserLimitResetEvent extends BaseEvent {
+  type: EventType.USER_LIMIT_RESET,
+  payload: ResetEventPayload,
+}
+
+export type UserLimitEvent = UserLimitCreatedEvent | UserLimitProgressChangedEvent | UserLimitResetEvent;
