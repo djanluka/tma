@@ -25,6 +25,7 @@ The important sub-tasks include `retry` policy when the event is not processed (
 
 - *** Get progress data: `userlimit/progress/{params}` - progress is visible per `userId` in the database, but it might be useful to have progress statistics for all users or based on timestamps...
 
+- *** Use `GraphQL` to provide clients ability to ask for exactly what they need and nothing more.
 
 ### How did/could you implement it so it’s possible to re-use it for other similar use cases?
 
