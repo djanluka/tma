@@ -29,7 +29,7 @@ The important sub-tasks include `retry` policy when the event is not processed (
 
 ### How did/could you implement it so it’s possible to re-use it for other similar use cases?
 
-The database interface `UserLimitRepository` ([see](https://github.com/djanluka/tma/blob/main/src/user_limit/repository/in_memory.ts#L4)) provides main functionalities `create/updateProgress/resetProgress` so any database instance can extend them. It provides totally re-usable `Template pattern`.
+The database interface `UserLimitRepository` ([see](https://github.com/djanluka/tma/blob/main/src/user_limit/repository/in_memory.ts)) provides main functionalities `create/updateProgress/resetProgress` so any database instance can extend them. It provides totally re-usable `Template pattern`.
 
 For an API implementation, again `Template pattern` + `Decorator pattern` can be used to implement basic functionalities + specific requirements per API.
 
