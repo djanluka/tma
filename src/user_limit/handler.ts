@@ -1,5 +1,5 @@
 // user-limit-handler.ts
-import {  UserLimitEvent, EventType, UserLimit } from './types.js';
+import {  UserLimitEvent, EventType, UserLimit, UserLimitCreatedEvent, UserLimitProgressChangedEvent, UserLimitResetEvent } from './types.js';
 import { UserLimitRepository } from './repository/in_memory.js';
 import { KinesisStreamEvent } from 'aws-lambda';
 
@@ -14,13 +14,13 @@ export class UserLimitHandler {
         
         switch (userLimitEvent.type) {
           case EventType.USER_LIMIT_CREATED:
-            await this.handleUserLimitCreated(userLimitEvent.payload);
+            await this.handleUserLimitCreated(userLimitEvent);
             break;
           case EventType.USER_LIMIT_PROGRESS_CHANGED:
-            await this.handleUserLimitProgressChanged(userLimitEvent.payload);
+            await this.handleUserLimitProgressChanged(userLimitEvent);
             break;
           case EventType.USER_LIMIT_RESET:
-            await this.handleUserLimitReset(userLimitEvent.payload);
+            await this.handleUserLimitReset(userLimitEvent);
             break;
           default:
             console.warn(`❓Unknown event type: ${(userLimitEvent as any).type}`);
@@ -31,28 +31,30 @@ export class UserLimitHandler {
     }
   }
 
-  private async handleUserLimitCreated(userLimit: UserLimit): Promise<void> {
-    const created = await this.repository.create(userLimit);
-    if (!created) {
-      throw new Error(`Failed creating UserLimit: ${userLimit.userLimitId}`);
+  private async handleUserLimitCreated(userLimit: UserLimitCreatedEvent): Promise<void> {
+    const created = await this.repository.create(userLimit.payload);
+    if (!created.isOk()) {
+      console.warn(`⚠️ User limit not created: ${created.error}`);
+      return;
     }
-    console.log(`✅ Created new user limit: ${userLimit.userLimitId}`);
+    console.log(`✅ Created new user limit: ${userLimit.payload.userLimitId}`);
   }
 
-  private async handleUserLimitProgressChanged(data: UserLimit): Promise<void> {
-    await this.repository.updateProgress(data);
-    // if (!updatedLimit) {
-    //   console.warn(`User limit not found: ${data.payload.userLimitId}`);
-    //   return;
-    // }
-    console.log(`✅ Updated progress for limit ${data.userLimitId}`);
+  private async handleUserLimitProgressChanged(userLimit: UserLimitProgressChangedEvent): Promise<void> {
+    const updated = await this.repository.updateProgress(userLimit.payload);
+    if (!updated.isOk()) {
+      console.warn(`⚠️ User limit not updated: ${updated.error}`);
+      return;
+    }
+    console.log(`✅ Updated progress for limit ${userLimit.payload.userLimitId}`);
   }
 
-  private async handleUserLimitReset(userLimit: UserLimit): Promise<void> {
-    const reset = await this.repository.resetProgress(userLimit);
-    if (!reset) {
-      throw new Error(`Failed reset UserLimit: ${userLimit.userLimitId}`);
+  private async handleUserLimitReset(userLimit: UserLimitResetEvent): Promise<void> {
+    const reset = await this.repository.resetProgress(userLimit.payload);
+    if (!reset.isOk()) {
+      console.warn(`⚠️ User limit not reset: ${reset.error}`);
+      return;
     }
-    console.log(`✅ Reset progress for limit ${userLimit.userLimitId}`);
+    console.log(`✅ Reset progress for limit ${userLimit.payload.userLimitId}`);
   }
 }
